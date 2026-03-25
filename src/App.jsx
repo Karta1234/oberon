@@ -21,7 +21,7 @@ const extractUrl = (data) => {
   return data.url || null;
 };
 const POLL_INTERVAL = 4000;
-const MAX_POLL_ATTEMPTS = 75;
+const MAX_POLL_ATTEMPTS = 150;
 
 function ImageCard({ title, hint, image, onChange }) {
   const fileRef = useRef(null);
@@ -262,7 +262,7 @@ export default function App() {
       elapsed += POLL_INTERVAL;
     }
 
-    throw new Error('Превышено время ожидания (5 минут). Попробуйте снова.');
+    throw new Error('Превышено время ожидания (10 минут). Попробуйте снова.');
   }, []);
 
   const handleGenerate = async () => {

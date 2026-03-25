@@ -13,6 +13,13 @@ const STYLES = [
 ];
 
 const API_BASE = 'https://polza.ai/api/v1/media';
+
+const extractUrl = (data) => {
+  if (!data) return null;
+  if (Array.isArray(data)) return data[0]?.url || null;
+  if (typeof data === 'string') return data;
+  return data.url || null;
+};
 const POLL_INTERVAL = 4000;
 const MAX_POLL_ATTEMPTS = 75;
 
@@ -248,7 +255,7 @@ export default function App() {
 
       const json = await res.json();
 
-      if (json.status === 'completed') return json.data?.url;
+      if (json.status === 'completed') return extractUrl(json.data);
       if (json.status === 'failed') throw new Error(`Ошибка: ${json.error}`);
 
       await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL));
@@ -316,8 +323,9 @@ export default function App() {
         throw new Error(data.error.message || 'Ошибка генерации');
       }
 
-      if (data.status === 'completed' && data.data?.url) {
-        setResult(data.data.url);
+      const directUrl = data.status === 'completed' && extractUrl(data.data);
+      if (directUrl) {
+        setResult(directUrl);
       } else {
         const generationId = data.id;
         if (!generationId) throw new Error('Не удалось получить ID генерации из ответа API');
